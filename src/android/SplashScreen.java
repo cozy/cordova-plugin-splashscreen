@@ -31,6 +31,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AlphaAnimation;
@@ -281,7 +282,12 @@ public class SplashScreen extends CordovaPlugin {
         cordova.getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 // Get reference to display
-                Display display = cordova.getActivity().getWindowManager().getDefaultDisplay();
+                WindowManager manager = cordova.getActivity().getWindowManager();
+                if (manager == null) {
+                    return;
+                }
+                Display display = manager.getDefaultDisplay();
+
                 Context context = webView.getContext();
 
                 // Use an ImageView to render the image because of its flexible scaling options.
@@ -308,7 +314,11 @@ public class SplashScreen extends CordovaPlugin {
                 // Create and show the dialog
                 splashDialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar);
                 // check to see if the splash screen should be full screen
-                if ((cordova.getActivity().getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                Window window = cordova.getActivity().getWindow();
+                if (window == null) {
+                    return;
+                }
+                if ((window.getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN)
                         == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
                     splashDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
